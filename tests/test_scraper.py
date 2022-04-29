@@ -1,4 +1,6 @@
+import abc
 from bs4 import BeautifulSoup
+import bs4
 import pytest
 from scraper import abc_scraper
 import responses
@@ -28,8 +30,13 @@ def example_article_from_list2(example_article_list):
 @pytest.fixture
 def example_article():
     with open('tests/example_article.html', 'r') as infile:
-        data = json.load(infile)
-        return data
+        soup = BeautifulSoup(infile, 'html.parser')
+        return soup
+
+@pytest.fixture
+def example_content():
+    with open('tests/example_content.txt', 'r') as infile:
+        return infile.read()
 
 def test_get_article_list_success(mock_endpoints, example_article_list):
     mock_endpoints.add(responses.GET, f"https://www.abc.net.au/news-web/api/loader/justinstories", json=example_article_list, status=200)
@@ -81,4 +88,18 @@ def test_get_last_updated(example_article_from_list, example_article_from_list2)
 def test_get_authors(example_article_from_list, example_article_from_list2):
     assert abc_scraper.get_authors(example_article_from_list) == None
     assert abc_scraper.get_authors(example_article_from_list2) == ["Luke Radford", "Warwick Long"]
+
+def test_get_tags(example_article):
+    tags = abc_scraper.get_tags(example_article)
+    assert tags == ["Ukraine", "United Nations", "Antonio Guterres", "kyiv", "donbas", "donetsk", "kharkiv", "mariupol"]
+
+def test_get_content(example_article, example_content):
+    content = abc_scraper.get_content(example_article)
+    assert content == example_content
+
+def test_get_key_points(example_article):
+    key_points = abc_scraper.get_key_points(example_article)
+    assert key_points == ["Russian missiles hit Kyiv during a visit by UN chief Antonio Guterres",
+                          "Mr Guterres condemned atrocities committed in towns like Bucha, where evidence of mass killings of civilians has been found",
+                          "Ukraine said its forces continued to face heavy Russian attacks in the Donbas region"]
 

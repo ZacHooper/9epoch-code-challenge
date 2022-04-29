@@ -57,6 +57,17 @@ def get_last_updated(article):
         return article['timestamp']['dates']['lastUpdated']['labelDate'] 
 
 def clean_article(article):
+    """Parses the individual JSON objects from the article list
+    Dictionary output will be the following
+    {
+        "title": str,
+        "link": str,
+        "author": list,
+        "description": str,
+        "published": str,
+        "last_updated": str
+    }
+    """
     return {
         "title": get_title(article),
         "link": get_link(article),
@@ -75,11 +86,61 @@ def parse_article_list(article_list: dict):
     Returns:
         list: List of articles as dict objects
     """
-    
     dirty_articles = article_list['collection']
     articles = [clean_article(article) for article in dirty_articles]
     return articles
 
+def get_tags(soup: bs4.BeautifulSoup):
+    """Get the meta tags of the article
+
+    Args:
+        soup (bs4.BeautifulSoup): A bs4 soup of the article
+
+    Returns:
+        list: meta tags for the article
+    """
+    meta_tags = soup.find_all('meta', property='article:tag')
+    tags = [meta.get('content') for meta in meta_tags]
+    return tags
+
+# used to clean unicode spaces in page
+clean_spaces = lambda text: text.replace(u'\xa0', u' ')
+
+def get_content(soup: bs4.BeautifulSoup):
+    """Get's the content from the article and returns it as a long string
+
+    Args:
+        soup (bs4.BeautifulSoup): BS4 parsed article
+
+    Returns:
+        str: content of the article
+    """
+    container_div = soup.find('div', {"class": "_2jYh0"})
+    # Build Filter
+    aside_pullquote = lambda tag: tag.get('data-component') == "Pullquote"
+    p_tags = lambda tag: tag.name == 'p' and tag.parent.name == 'div' and not tag.has_attr('data-component')
+    h2_tags = lambda tag: tag.name == 'h2' and tag.parent.name == 'div'
+    # Get relevant content
+    text_tags = container_div.find_all([aside_pullquote, p_tags, h2_tags])
+    texts = [clean_spaces(text_tag.text).strip() for text_tag in text_tags]
+    content = "\n\n".join(texts)
+    with open('delete_me.txt', 'w') as outfile:
+        outfile.write(content)
+    return content
+
+def get_key_points(soup: bs4.BeautifulSoup):
+    """Get's the key points for the article
+
+    Args:
+        soup (bs4.BeautifulSoup): bs4 parsed article
+
+    Returns:
+        list: key points for the article
+    """
+    key_points_section = soup.find({'section': {'data-component': 'KeyPoints'}})
+    key_points_li = key_points_section.find_all('li')
+    key_points = [clean_spaces(key_point.text) for key_point in key_points_li]
+    return key_points
 
 if __name__ == "__main__":
     articles = get_list_articles(1)
