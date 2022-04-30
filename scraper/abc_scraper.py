@@ -125,8 +125,6 @@ def get_content(soup: bs4.BeautifulSoup):
     text_tags = container_div.find_all([aside_pullquote, p_tags, h2_tags])
     texts = [clean_spaces(text_tag.text).strip() for text_tag in text_tags]
     content = "\n\n".join(texts)
-    with open('delete_me.txt', 'w') as outfile:
-        outfile.write(content)
     return content
 
 def get_key_points(soup: bs4.BeautifulSoup):
