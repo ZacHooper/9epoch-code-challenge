@@ -34,6 +34,12 @@ def example_article():
         return soup
 
 @pytest.fixture
+def example_article_no_key_points():
+    with open('tests/no_key_points_article.html', 'r') as infile:
+        soup = BeautifulSoup(infile, 'html.parser')
+        return soup
+
+@pytest.fixture
 def example_content():
     with open('tests/example_content.txt', 'r') as infile:
         return infile.read()
@@ -103,3 +109,7 @@ def test_get_key_points(example_article):
                           "Mr Guterres condemned atrocities committed in towns like Bucha, where evidence of mass killings of civilians has been found",
                           "Ukraine said its forces continued to face heavy Russian attacks in the Donbas region"]
 
+
+def test_no_key_points_handle(example_article_no_key_points):
+    key_points = abc_scraper.get_key_points(example_article_no_key_points)
+    assert key_points == None

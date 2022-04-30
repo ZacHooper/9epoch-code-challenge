@@ -30,6 +30,7 @@ def get_article_soup(link: str):
     Returns:
         BeautifulSoup: A BeautifulSoup object
     """
+    print(f"Getting article: https://www.abc.net.au{link}")
     r = requests.get(f"https://www.abc.net.au{link}")
     if not r.ok:
         r.raise_for_status()
@@ -138,15 +139,24 @@ def get_key_points(soup: bs4.BeautifulSoup):
         list: key points for the article
     """
     key_points_section = soup.find({'section': {'data-component': 'KeyPoints'}})
+    # Handle if no key points for article
+    if key_points_section is None:
+        return None
     key_points_li = key_points_section.find_all('li')
     key_points = [clean_spaces(key_point.text) for key_point in key_points_li]
     return key_points
 
 if __name__ == "__main__":
-    articles = get_list_articles(1)
-    print(len(articles['collection']))
-    with open('example_article_list.json', 'w') as outfile:
-        outfile.write(json.dumps(articles))
-
+    articles = get_list_articles()
     clean_articles = parse_article_list(articles)
-    print(clean_articles)
+    
+    article = clean_articles[0]
+    print(article)
+    soup = get_article_soup(article['link'])
+    tags = get_tags(soup)
+    content = get_content(soup)
+    key_points = get_key_points(soup)
+    article['tags'] = tags
+    article['content'] = content
+    article['key_points'] = key_points
+    print(article)
