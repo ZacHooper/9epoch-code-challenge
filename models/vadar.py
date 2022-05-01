@@ -20,11 +20,4 @@ if __name__ == "__main__" :
 	# function calling
 	print(compound_score(sentence))
 
-	print("\n2nd Statement :")
-	sentence = "study is going on as usual"
-	print(compound_score(sentence))
-
-	print("\n3rd Statement :")
-	sentence = "I am very sad today."
-	print(compound_score(sentence))
 
