@@ -29,19 +29,19 @@ The pre-trained sentiment analysis tool ["VADER"](https://github.com/cjhutto/vad
 
 A Postgresql database was used to store the scraped articles. The schema of the `abc_articles` table is as follows:
 
-| Column Label         | Data Type | Notes                        |   |   |
-|----------------------|-----------|------------------------------|---|---|
-| id                   | serial    | Primary Key & Auto Increment |   |   |
-| title                | text      |                              |   |   |
-| author               | text[]    |                              |   |   |
-| description          | text      |                              |   |   |
-| published            | timestamp |                              |   |   |
-| last_updated         | timestamp |                              |   |   |
-| tags                 | text[]    |                              |   |   |
-| content              | text      |                              |   |   |
-| key_points           | text[]    |                              |   |   |
-| title_sentiment      | numeric   |                              |   |   |
-| key_points_sentiment | numeric   |                              |   |   |
+| Column Label         | Data Type | Notes                        |
+|----------------------|-----------|------------------------------|
+| id                   | serial    | Primary Key & Auto Increment |
+| title                | text      |                              |
+| author               | text[]    |                              |
+| description          | text      |                              |
+| published            | timestamp |                              |
+| last_updated         | timestamp |                              |
+| tags                 | text[]    |                              |
+| content              | text      |                              |
+| key_points           | text[]    |                              |
+| title_sentiment      | numeric   |                              |
+| key_points_sentiment | numeric   |                              |
 
 Following the scraping and sentiment analysis the data was inserted into the database above. The articles were processed 25 at a time to reduce on RAM requirements.
 
