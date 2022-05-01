@@ -75,6 +75,12 @@ Create a new Python virtual environment
 python3 -m venv venv
 ```
 
+Activate the virtual environment (assuming MacOS or Linux)
+
+```bash
+source venv/bin/activate
+```
+
 Install the required dependencies
 
 ```bash
